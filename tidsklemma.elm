@@ -53,6 +53,16 @@ intervalToQuartiles ((Interval from to), val) =
 subtract all some =
     List.map2 daySubtract all some
 
+kidsQuartiles = List.map dayToQuartiles kidsPresent
+
+kidsPerAdult kids adults = 
+    Dict.merge
+        (\k kid r -> Dict.insert k 9999 r)
+        (\k kid adult r -> Dict.insert k (kid // adult) r)
+        (\k adult r -> Dict.insert k 0 r)
+        kids adults
+        Dict.empty
+
 daySubtract all some =
     let from = dayToQuartiles all
         take = dayToQuartiles some
@@ -71,8 +81,9 @@ main =
   [ viewWeek normativeKidsPerAdult "Normert antall barn per voksen for Troll"
   , Html.hr [] []
   , viewWeek adultsPresent "Antall voksne i området"
+  , viewWeekQuartiles kidsQuartiles "Antall barn tilstede"
   , viewWeekQuartiles adultsAvailable "Antall tilgjengelige voksne"
-  , viewQuartiles <| intervalToQuartiles <| (Interval 9 14.25 => 4)
+  , viewWeekQuartiles (List.map2 kidsPerAdult kidsQuartiles adultsAvailable) "Antall barn per voksen"
   ]
 
 viewWeek week caption =
