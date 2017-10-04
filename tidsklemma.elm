@@ -76,6 +76,19 @@ kidsPerAdult kids adults =
         kids adults
         Dict.empty
 
+kidsPerAdultFilter kids adults = 
+    Dict.merge
+        (\k kid r -> Dict.insert k 9999 r)
+        insertKpaIfHigh
+        (\k adult r -> Dict.insert k 0 r)
+        kids adults
+        Dict.empty
+
+insertKpaIfHigh k kid adult r =
+    let kpa = kid // adult
+    in
+    if kpa > 6 then Dict.insert k (kid // adult) r else r
+
 daySubtract all some =
     let from = dayToQuartiles all
         take = dayToQuartiles some
@@ -97,6 +110,7 @@ main =
   , viewWeekQuartiles kidsQuartiles "Antall barn tilstede"
   , viewWeekQuartiles adultsAvailable "Antall tilgjengelige voksne"
   , viewWeekQuartiles (List.map2 kidsPerAdult kidsQuartiles adultsAvailable) "Antall barn per voksen"
+  , viewWeekQuartiles (List.map2 kidsPerAdultFilter kidsQuartiles adultsAvailable) "Mange barn per voksen"
   ]
 
 viewWeek week caption =
