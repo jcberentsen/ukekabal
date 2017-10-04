@@ -18,24 +18,37 @@ typicalKidsDay =
 kidsPresent = List.repeat 5 typicalKidsDay
 
 typicalAdultsDay
- = [ Interval 9 14.25 => 4
+ = [ Interval 7 8 => 1
+   , Interval 8 8.75 => 2
+   , Interval 8.75 9.5 => 3
+   , Interval 9.5 14.25 => 4
    , Interval 14.25 15.5 => 3
    , Interval 15.5 16.25 => 2
    , Interval 16.25 17 => 1
    ]
 
-adultsPresent = List.repeat 5 typicalAdultsDay
+shortStaffed
+ = [ Interval 7 8 => 1
+   , Interval 8 8.75 => 2
+   , Interval 8.75 9.5 => 3 -- her gaar noen hjem
+   , Interval 9.5 13.5 => 4
+   , Interval 13.5 15.5 => 3
+   , Interval 15.5 16.25 => 2
+   , Interval 16.25 17 => 1
+   ]
+
+adultsWeek = shortStaffed :: (List.repeat 4 typicalAdultsDay)
 
 normativeDay = [Interval 7 17 => 6] -- barn / voksen
 normativeKidsPerAdult = List.repeat 5 normativeDay
 
-lunchBreaks =
- [ Interval 9.5 10 => 1
- , Interval 11.75 12.25 => 1
- , Interval 13 13.5 => 2
+temporaryAbsense =
+ [ Interval 9.5 10 => 1 -- lunch
+ , Interval 11.75 12.25 => 1 --lunch
+ , Interval 13 13.5 => 2 --lunch
  ]
 
-lunchWeek = List.repeat 5 lunchBreaks
+absenseWeek = List.repeat 5 temporaryAbsense
 
 quartile time = floor <| 4 * time
 
@@ -74,13 +87,13 @@ daySubtract all some =
         from take
         Dict.empty
 
-adultsAvailable = subtract adultsPresent lunchWeek
+adultsAvailable = subtract adultsWeek absenseWeek
 
 main =
   Html.div []
   [ viewWeek normativeKidsPerAdult "Normert antall barn per voksen for Troll"
   , Html.hr [] []
-  , viewWeek adultsPresent "Antall voksne i området"
+  , viewWeek adultsWeek "Antall voksne i området"
   , viewWeekQuartiles kidsQuartiles "Antall barn tilstede"
   , viewWeekQuartiles adultsAvailable "Antall tilgjengelige voksne"
   , viewWeekQuartiles (List.map2 kidsPerAdult kidsQuartiles adultsAvailable) "Antall barn per voksen"
