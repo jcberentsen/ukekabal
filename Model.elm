@@ -1,4 +1,5 @@
-import Html exposing (text)
+module Model exposing (..)
+
 import List
 import Tuple exposing (first, second)
 import Dict
@@ -102,32 +103,3 @@ daySubtract all some =
 
 adultsAvailable = subtract adultsWeek absenseWeek
 
-main =
-  Html.div []
-  [ viewWeek normativeKidsPerAdult "Normert antall barn per voksen for Troll"
-  , Html.hr [] []
-  , viewWeek adultsWeek "Antall voksne i området"
-  , viewWeekQuartiles kidsQuartiles "Antall barn tilstede"
-  , viewWeekQuartiles adultsAvailable "Antall tilgjengelige voksne"
-  , viewWeekQuartiles (List.map2 kidsPerAdult kidsQuartiles adultsAvailable) "Antall barn per voksen"
-  , viewWeekQuartiles (List.map2 kidsPerAdultFilter kidsQuartiles adultsAvailable) "Mange barn per voksen"
-  ]
-
-viewWeek week caption =
-  Html.div []
-  [ Html.p [] [text caption]
-  , Html.ol []
-    <| List.map (Html.li [] << List.singleton << text << daySummary) week
-  ]
-
-viewWeekQuartiles weekQuartiles caption =
-  Html.div []
-  [ Html.p [] [text caption]
-  , Html.ol []
-    <| List.map (Html.li [] << List.singleton << viewQuartiles) weekQuartiles
-  ]
-
-viewQuartiles = toString >> text >> List.singleton >> Html.p []
-
-showInterval interval = toString (first interval) ++ ": " ++ (toString (second interval))
-daySummary intervals = String.concat <| List.intersperse ", " <| List.map showInterval intervals
